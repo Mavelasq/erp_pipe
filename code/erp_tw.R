@@ -33,11 +33,14 @@ which(names(dat_final_comp)== "DataPoint_260") #look up data point
 
 #initialize tw 
 #creating dfs with the inc and con waves and difference waves for each erp
+which(names(dat_final_dif) == "DataPoint_550")
+
+
 tw_p3     = dat_final_comp[,c(1:5,215:245)] #320-380
 tw_p3_dif = dat_final_dif[,c(1:4,215:245)]
 
-tw_N450     = dat_final_comp[,c(1:5,305:345)] #500 - 580
-tw_N450_dif = dat_final_dif[,c(1:4,305:345)]
+tw_N450     = dat_final_comp[,c(1:5,279:329)] #500 - 580
+tw_N450_dif = dat_final_dif[,c(1:4,279:329)]
 
 tw_p2     = dat_final_comp[,c(1:5,165:185)] #220 - 260
 tw_p2_dif = dat_final_dif[,c(1:4,165:185)]
@@ -110,7 +113,7 @@ write.csv(diff_mean_mus, file = "dif_mean_mus.csv")
 
 
 #ANOVA mean amplitude####
-summary(aov(tw_mean ~ mus_code, filter(tw_p2_mean, ElectrodeSite == "pz" & Task == "simon")))
+summary(aov(tw_mean ~ mus_code, filter(tw_N450_difmean, ElectrodeSite == "fz" & Task == "simon")))
 
 #bar graph
 tw_p3_sum = tw_p3_mean %>%
@@ -129,7 +132,7 @@ ggplot(aes(x = Condition, y = mean))+
 #correction for multiple comparison
 #p300 simon ps
 p_p3_si = c(0.0338,0.0244,0.104)
-p_n450_si = c(0.001,0.066,0.00001)
+p_n450_si = c(0.0307,0.99)
 
 p.adjust(p_n450_si, method = "fdr")
 
@@ -302,6 +305,14 @@ calculate_slopes <- function(dat_final_comp, slope_erp, dip_suffix, peak_suffix)
   return(slope_erp)
 }
 
+#latencies comparison 
+full_dat_comp = merge(pl_data_long.f, slope_erp, by = c("id", "ElectrodeSite", "Task", "Condition"))
+
+summary(aov(beta_p3 ~ mus_code, filter(full_dat_comp, ElectrodeSite == "pz" & Task == "stroop" & Condition == "incongruent")))
+
+str_p_com_mus = c(0.024, .711, .55)
+p.adjust(str_p_com_mus, method = "fdr")
+
 #Slope Analysis difference waves####
 #make column of R2 or beta values
 slope_erp_dif = dat_final_dif[,1:4]
@@ -403,7 +414,7 @@ for (i in 1:nrow(slope_erp_dif)){
 }
 
 #ANOVA slope####
-summary(aov(p2_lat ~ mus_code, filter(slope_erp_dif, ElectrodeSite == "cz" & Task == "simon")))
+summary(aov(tw_mean ~ mus_code, filter(slope_erp, ElectrodeSite == "fz" & Task == "simon" & Condition == "incongruent")))
 
 dif_summary = slope_erp_dif %>%
   group_by(mus_code, ElectrodeSite, Task) %>%
@@ -416,5 +427,17 @@ dif_summary = slope_erp_dif %>%
     sd_n450_lat = sd(n450_lat)
   )
 
+p_p3_si_dif = c(0.02, .48, 0.06)
+p_n450_si_dif = c(0.38, .84, 0.01)
+
+p.adjust(p_n450_si_dif, method = "fdr")
+
+#ANOVA beta####
+
+
+#ANOVA slope####
+summary(aov(beta_n450 ~ mus_code, filter(slope_erp_dif, ElectrodeSite == "fz" & Task == "simon")))
+
+
 #plot waves####
-plot(seq(from = -98, to = 900, by = 2), dat_final_comp[12, 6:ncol(dat_final_comp)])
+plot(seq(from = -98, to = 900, by = 2), dat_final_dif[134, 5:ncol(dat_final_dif)])
