@@ -42,12 +42,6 @@ tw_p3_dif = dat_final_dif[,c(1:4,215:245)]
 tw_N450     = dat_final_comp[,c(1:5,279:329)] #500 - 580
 tw_N450_dif = dat_final_dif[,c(1:4,279:329)]
 
-tw_p3     = dat_final_comp[,c(1:5,215:245)] #320-380
-tw_p3_dif = dat_final_dif[,c(1:4,215:245)]
-
-tw_N450     = dat_final_comp[,c(1:5,305:345)] #500 - 580
-tw_N450_dif = dat_final_dif[,c(1:4,305:345)]
-
 tw_p2     = dat_final_comp[,c(1:5,165:185)] #220 - 260
 tw_p2_dif = dat_final_dif[,c(1:4,165:185)]
 
@@ -120,7 +114,6 @@ write.csv(diff_mean_mus, file = "dif_mean_mus.csv")
 
 #ANOVA mean amplitude####
 summary(aov(tw_mean ~ mus_code, filter(tw_N450_difmean, ElectrodeSite == "fz" & Task == "simon")))
-summary(aov(tw_mean ~ mus_code, filter(tw_p2_mean, ElectrodeSite == "pz" & Task == "simon")))
 
 #bar graph
 tw_p3_sum = tw_p3_mean %>%
@@ -133,14 +126,13 @@ tw_p3_sum = tw_p3_mean %>%
   mutate(se = sd/sqrt(n))
 
 filter(tw_p3_sum, ElectrodeSite == "cz" & Task == "simon") %>%
-ggplot(aes(x = Condition, y = mean))+
+  ggplot(aes(x = Condition, y = mean))+
   geom_bar(stat = )
 
 #correction for multiple comparison
 #p300 simon ps
 p_p3_si = c(0.0338,0.0244,0.104)
 p_n450_si = c(0.0307,0.99)
-p_n450_si = c(0.001,0.066,0.00001)
 
 p.adjust(p_n450_si, method = "fdr")
 
@@ -216,56 +208,56 @@ dat_final_comp = arrange(dat_final_comp, id, Task, Condition, ElectrodeSite)
 
 #get latencies for dips and peaks####
 for (i in 1:nrow(dat_final_comp)){
-    #check if info matches in both dfs
-    id_f   <- dat_final_comp$id[i] 
-    task_f <- dat_final_comp$Task[i]
-    cond_f <- dat_final_comp$Condition[i] 
-    es_f   <- dat_final_comp$ElectrodeSite[i]
-    id_p   <- pl_data_long.f$id[i] 
-    task_p <- pl_data_long.f$Task[i]
-    cond_p <- pl_data_long.f$Condition[i] 
-    es_p   <- pl_data_long.f$ElectrodeSite[i]
-    
+  #check if info matches in both dfs
+  id_f   <- dat_final_comp$id[i] 
+  task_f <- dat_final_comp$Task[i]
+  cond_f <- dat_final_comp$Condition[i] 
+  es_f   <- dat_final_comp$ElectrodeSite[i]
+  id_p   <- pl_data_long.f$id[i] 
+  task_p <- pl_data_long.f$Task[i]
+  cond_p <- pl_data_long.f$Condition[i] 
+  es_p   <- pl_data_long.f$ElectrodeSite[i]
+  
   if (id_f == id_p & task_f == task_p & cond_f == cond_p & es_f == es_p){ #if info matches
     #p2
-      idx_col = grep("p2.l", colnames(pl_data_long.f)) #get index of p2 peak latency
-      lat = pl_data_long.f[i,idx_col] #get latency value
-      #find latency in timeline
-      lat_idx = grep(lat, names(dat_final_comp))
-      slope_erp$peak_p2[i] = dat_final_comp[i,lat_idx] #store peak value at slope_erp
-      #get p2 dip (n1)
-      idx_col_d = grep("n1.l", colnames(pl_data_long.f)) #get index of erp
-      lat_d = pl_data_long.f[i,idx_col_d] #get latency
-      #find latency in timeline
-      lat_idx_d = grep(lat_d, names(dat_final_comp))
-      slope_erp$dip_n1[i] = dat_final_comp[i,lat_idx_d] #store peak value at slope_erp
-      #dip - 200
-      #minx=lat_idx-100
-      #slope_erp$dip_p3[i] = min(as.numeric(dat_final_comp[i,minx:lat_idx]))
+    idx_col = grep("p2.l", colnames(pl_data_long.f)) #get index of p2 peak latency
+    lat = pl_data_long.f[i,idx_col] #get latency value
+    #find latency in timeline
+    lat_idx = grep(lat, names(dat_final_comp))
+    slope_erp$peak_p2[i] = dat_final_comp[i,lat_idx] #store peak value at slope_erp
+    #get p2 dip (n1)
+    idx_col_d = grep("n1.l", colnames(pl_data_long.f)) #get index of erp
+    lat_d = pl_data_long.f[i,idx_col_d] #get latency
+    #find latency in timeline
+    lat_idx_d = grep(lat_d, names(dat_final_comp))
+    slope_erp$dip_n1[i] = dat_final_comp[i,lat_idx_d] #store peak value at slope_erp
+    #dip - 200
+    #minx=lat_idx-100
+    #slope_erp$dip_p3[i] = min(as.numeric(dat_final_comp[i,minx:lat_idx]))
     #p3
-      idx_col = grep("p3.l", colnames(pl_data_long.f)) #get index of p2 peak latency
-      lat = pl_data_long.f[i,idx_col] #get latency value
-      #find latency in timeline
-      lat_idx = grep(lat, names(dat_final_comp))
-      slope_erp$peak_p3[i] = dat_final_comp[i,lat_idx] #store peak value at slope_erp
-      #get p2 dip (n1)
-      idx_col_d = grep("n300.l", colnames(pl_data_long.f)) #get index of erp
-      lat_d = pl_data_long.f[i,idx_col_d] #get latency
-      #find latency in timeline
-      lat_idx_d = grep(lat_d, names(dat_final_comp))
-      slope_erp$dip_n300[i] = dat_final_comp[i,lat_idx_d] #store peak value at slope_erp
-      #dip - 200
-      minx=lat_idx-100
-      slope_erp$dip_p3[i] = min(as.numeric(dat_final_comp[i,minx:lat_idx]))
+    idx_col = grep("p3.l", colnames(pl_data_long.f)) #get index of p2 peak latency
+    lat = pl_data_long.f[i,idx_col] #get latency value
+    #find latency in timeline
+    lat_idx = grep(lat, names(dat_final_comp))
+    slope_erp$peak_p3[i] = dat_final_comp[i,lat_idx] #store peak value at slope_erp
+    #get p2 dip (n1)
+    idx_col_d = grep("n300.l", colnames(pl_data_long.f)) #get index of erp
+    lat_d = pl_data_long.f[i,idx_col_d] #get latency
+    #find latency in timeline
+    lat_idx_d = grep(lat_d, names(dat_final_comp))
+    slope_erp$dip_n300[i] = dat_final_comp[i,lat_idx_d] #store peak value at slope_erp
+    #dip - 200
+    minx=lat_idx-100
+    slope_erp$dip_p3[i] = min(as.numeric(dat_final_comp[i,minx:lat_idx]))
     #n450
-      idx_col = grep("n400.l", colnames(pl_data_long.f)) #get index of p2 peak latency
-      lat = pl_data_long.f[i,idx_col] #get latency value
-      #find latency in timeline
-      lat_idx = grep(lat, names(dat_final_comp))
-      slope_erp$dip_n400[i] = dat_final_comp[i,lat_idx] #store peak value at slope_erp
-     
-    }
- }
+    idx_col = grep("n400.l", colnames(pl_data_long.f)) #get index of p2 peak latency
+    lat = pl_data_long.f[i,idx_col] #get latency value
+    #find latency in timeline
+    lat_idx = grep(lat, names(dat_final_comp))
+    slope_erp$dip_n400[i] = dat_final_comp[i,lat_idx] #store peak value at slope_erp
+    
+  }
+}
 
 # replace n300 with dip values
 slope_erp$dip_n300[8] = slope_erp$dip_p3[8]
@@ -280,7 +272,7 @@ slope_erp$dip_n300[175] = slope_erp$dip_p3[175]
 for (i in 1:nrow(slope_erp)){
   xmin = which(dat_final_comp[i,] == slope_erp$peak_p3[i])
   xmax = which(dat_final_comp[i,] == slope_erp$dip_n400[i])
-
+  
   x1_test = as.numeric(dat_final_comp[i,xmin:xmax])
   x1_test_length = 1:length(xmin:xmax)
   test_lm = lm(x1_test ~ x1_test_length)
@@ -358,18 +350,7 @@ for (i in 1: nrow(slope_erp_dif)){
   lat_idx = which(dat_final_dif[i,] == slope_erp_dif$max_p3[i])
   minx=lat_idx-100
   slope_erp_dif$min_p3[i] = -findpeaks(as.numeric(-dat_final_dif[i, minx:lat_idx]), nups = 1, ndowns = 1, npeaks = 1, sortstr = TRUE)[1]
-
-which(names(dat_final_dif) == "DataPoint_550")
-
-#get peak
-#p2 : 150-250 (129:179)
-for (i in 1: nrow(slope_erp_dif)){
-  slope_erp_dif$max_p3[i] = max(dat_final_dif[i, 129:179])
-  lat_idx = which(dat_final_dif[i,] == max(dat_final_dif[i, 129:179]))
-  minx=lat_idx-100
-  slope_erp_dif$min_p3[i] = min(dat_final_dif[i, minx:lat_idx])
   
-
   xmax = which(dat_final_dif[i,] == slope_erp_dif$max_p3[i])
   xmin = which(dat_final_dif[i,] == slope_erp_dif$min_p3[i])
   
@@ -386,18 +367,11 @@ for (i in 1: nrow(slope_erp_dif)){
   lat_idx = which(dat_final_dif[i,] == slope_erp_dif$min_p3[i])
   maxx=lat_idx-100
   slope_erp_dif$max_p3[i] = findpeaks(as.numeric(dat_final_dif[i, maxx:lat_idx]), nups = 1, ndowns = 1, npeaks = 1, sortstr = TRUE)[1]
-  slope_erp_dif$min_p3[i] = min(dat_final_dif[i, 189:264])
-  lat_idx = which(dat_final_dif[i,] == min(dat_final_dif[i, 189:264]))
-  maxx=lat_idx-100
-  slope_erp_dif$max_p3[i] = max(dat_final_dif[i, maxx:lat_idx])
   
-
   xmax = which(dat_final_dif[i,] == slope_erp_dif$max_p3[i])
   xmin = which(dat_final_dif[i,] == slope_erp_dif$min_p3[i])
   
   x1_test = as.numeric(dat_final_dif[i, xmax:xmin])
-  x1_test = as.numeric(dat_final_dif[i, xmin:xmax])
-  
   x1_test_length = 1:length(xmax:xmin)
   test_lm = lm(x1_test ~ x1_test_length)
   slope_erp_dif$beta_p3[i] = as.numeric(test_lm$coefficients[2])
@@ -410,15 +384,7 @@ for (i in 1: nrow(slope_erp_dif)){
   lat_idx = which(dat_final_dif[i,] == slope_erp_dif$max_n450[i])
   minx=lat_idx-100
   slope_erp_dif$min_n450[i] = -findpeaks(as.numeric(-dat_final_dif[i, minx:lat_idx]), nups = 1, ndowns = 1, npeaks = 1, sortstr = TRUE)[1]
-
-
-#n450 : 400-550 (254:329), min: max - 100
-for (i in 1: nrow(slope_erp_dif)){
-  slope_erp_dif$max_n450[i] = max(dat_final_dif[i, 254:329])
-  lat_idx = which(dat_final_dif[i,] == max(dat_final_dif[i, 254:329]))
-  minx=lat_idx-100
-  slope_erp_dif$min_n450[i] = min(dat_final_dif[i, minx:lat_idx])
-
+  
   xmax = which(dat_final_dif[i,] == slope_erp_dif$max_n450[i])
   xmin = which(dat_final_dif[i,] == slope_erp_dif$min_n450[i])
   
@@ -475,7 +441,3 @@ summary(aov(beta_n450 ~ mus_code, filter(slope_erp_dif, ElectrodeSite == "fz" & 
 
 #plot waves####
 plot(seq(from = -98, to = 900, by = 2), dat_final_dif[134, 5:ncol(dat_final_dif)])
-
-
-#plot waves####
-plot(seq(from = -98, to = 900, by = 2), dat_final_comp[12, 6:ncol(dat_final_comp)])
